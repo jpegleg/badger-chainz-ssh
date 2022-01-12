@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+echo "AUTOSEAL EVENT TRIGGERED 120 seconds"
+systemctl stop sshd
+sleep 120
+systemctl start sshd
+echo "AUTOSEAL EVENT RELEASED 120 seconds"
