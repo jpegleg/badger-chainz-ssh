@@ -1,3 +1,3 @@
 # sbadger defaults for sec
 RUN_DAEMON="no"
-DAEMON_ARGS="--conf=/etc/sec.conf --log=/opt/.__/.__/.sec.log --input=/var/log/auth.log --pid=/var/run/sec.pid --detach --syslog=daemon"
+DAEMON_ARGS="--conf=/etc/sec.conf --log=/opt/sbgr/sec.log --input=/var/log/auth.log --pid=/var/run/sec.pid --detach"
