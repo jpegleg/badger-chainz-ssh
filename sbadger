@@ -57,7 +57,7 @@
 # chain, so if the hostkey changes or a new one is added, a new chain is started and logged.
 # On the first run of sbadger on a new chain with 0 previous lines, a FAIL mark
 # file will be created with no hash and a new chain started.
-# The FAIL and PASS MARK files are in /opt/sbgr/$nodeid.FAIL_MARK and /opt/sbgr/$nodeid.PASSMARK.
+# The FAIL and PASS MARK files are in /opt/sbgr/$nodeid.FAIL_MARK and /opt/sbgr/$nodeid.PASS_MARK
 # These files mark the chain hashes during the chain validtion phase, the first
 # function called by sbadger. The hashes in these MARK files can be used to
 # look up events in the sshchain_$nodeid.block that failed chain validation.
@@ -117,9 +117,7 @@ validate () {
 # The transaction function processes the SSH event data.
 # This function creates the primary key of a timestamp
 # that is used to pair the encrypted data files to
-# the chain itself. This data is typically confirmed
-# via the regular rsyslog data or other ssh log collection
-# systems, ideally with remote storage duplication.
+# the chain itself. 
 transaction () {
   chainlast=$(cat /opt/sbgr/sshchain_$nodeid.block | b2sum | cut -d' ' -f1)
   stamp=$(date +%Y%m%d%H%M%S%N)
