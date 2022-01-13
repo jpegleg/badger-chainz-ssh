@@ -1,0 +1,54 @@
+#!/usr/bin/env basxh
+linesx () {
+  val=$(tput cols)
+  x=1
+  while [ $x -le $val ]; do
+    echo -n 🦡
+    x=$((x+1));
+  done
+}
+reset
+linesx
+echo "Before installing, ensure that sbadger gpg recipient is set as desired."
+echo
+echo "The default points to root@love key in the root keyring."
+echo
+echo "Feel free to change that key as desired or generate a new one:"
+echo
+echo "$ gpg --full-gen-key"
+echo
+echo "Set the email to root@love to use the default key name"
+echo
+which sec || exit 1
+systemctl enable sec || exit 1
+echo "Stopping SEC while we configure sbadger..."
+systemctl stop sec
+cp sec.conf /etc/sec.conf
+cp sec_default /etc/default/sec
+cp sbadger /usr/local/sbin/
+cp autoseal_1 /usr/local/sbin/
+cp autoseal_2 /usr/local/sbin/
+chmod 700 /usr/local/sbin/sbadger
+chmod 700 /usr/local/sbin/autoseal_1
+chmod 700 /usr/local/sbin/autoseal_2
+mkdir -p /opt/sbgr/.ssh_logs 2>/dev/null
+echo "Installed sbadger..."
+echo
+echo "Checking sbadger initialization"
+echo init | sbadger || exit 1
+echo "Restarting SEC"
+echo
+systemctl restart sec
+echo "sbadger installed and enabled"
+echo
+linesx
+echo
+echo "WARNING: If many failed ssh login strings are observed then sshd is stopped for periods of time with autoseal_1 and autoseal_2. Established connections will remain open, but new ones will be refused during the autoseal event. You can disable this feature or otherwise tune it in the /etc/sec.conf file"
+echo
+echo "WARNING: This daemon accumulates log data in /opt/sbgr/"
+echo "Ensure you have enough disk space there and having monitoring/cleaning in place."
+echo
+echo "WARNING: The sbadger program is locking, additional sbadgers will sleep loop until"
+echo "the lock is freed, this is to keep the integrity of the chain. If many thousands of"
+echo "sbadger processes enter sleep loop wait etc, the system load can be significant."
+echo
