@@ -4,7 +4,7 @@
 # Badger Chainz SSH -----(sbadger)-----------------------#=#\_                                                                                   |                 MIT LICENSED     #
 #                                                        #=#/ \____ Associate ssh events with each other by reading log line as it is written    |   Copyright  © Keegan Bowen 2022 #
 #    SSH event log data transactional local blockchain   #=#\_/     each line fed into a self validating node chain.                             |                                  #
-#                                                        #=#/ \____ Each line is assigned a hash created from a BLAKE2 hash of last chain entry                                     #
+#                                                        #=#/ \____ Each line is assigned a hash created from a BLAKE2 hash of chain.                                               #
 #--------------------------------------------------------#=#\_/     useful for extra replication of ssh data locally, as an additional integrity system for ssh data and hostkeys.  #
 #####################################################################################################################################################################################
 
