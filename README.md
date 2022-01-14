@@ -59,7 +59,7 @@ Here is an example of a small chain just getting started:
 
 ```
 
-Manually verifying back up the chain can be done by taking the last line and removing all hashes matching that hash in that last line before that, then calculating a BLAKE2 hash of the rest of the chain. This removal may remove one or more lines that are considered transaction groups.
+Manually verifying back up the chain can be done by taking the last line and removing all hashes matching that the hash of the last line before that, then calculating a BLAKE2 hash of the rest of the chain. This removal may remove one or more lines that are considered transaction groups.
 That hash with the last line removed should match the hash in the line before the hash you removed. If it doesn't, then we can assume tampering or that it was the first transaction group for a given set of ssh host keys. A new chain triggers the checksum and ls of the individual host keys, the concatinated data hash, and the node id full hash.
 
 A "transaction set" in sbadger is when a group of messages are processed "at the same time", which is actually a useful quality.
