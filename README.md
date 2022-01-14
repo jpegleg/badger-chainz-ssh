@@ -90,7 +90,7 @@ While these structures are not as easy to use as primary analysis systems, they 
 
 ## Notes
 
-Currently if the SEC log is turned on we do see some exit 1 returns from sbadger spawn events. I would like to eliminate this behavior as it could confuse people.
+Currently if the SEC log is turned on we do see some exit 1 returns from sbadger spawn events. I would like to eliminate this behavior as it could confuse people that may see it as a fatal error when it can be OR could not be.
 In my tests, we see exit 1 under "normal" conditions for SOME events. When in doubt, review the files created from the process that had the bad exit code.
 By default the SEC log is not written, enable it via parameters in `/etc/defaults/sec`
 
