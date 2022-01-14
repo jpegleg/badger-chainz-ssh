@@ -91,6 +91,11 @@ While these structures are not as easy to use as primary analysis systems, they 
 Currently we do see some exit 1 returns from sbadger spawn events in sec. I would like to eliminate this behavior as it could confuse people.
 In my tests, we see exit 1 under "normal" conditions for SOME events. When in doubt, review the files created from the process that had the bad exit code.
 
+Here is an example of reconstructing an auth.log from the encrypted lines:
+```
+for x in $(ls *.enc); do echo $x; gpg -d $x >> reconstructed_auth.log; done
+```
+
 #### Before installing:
 
 Either replace the gpg usage in sbadger entirely or ensure a valid recipient is set for the gpg encryption. The default recipient is a key in the root keyring labelled with the email root@love. 
