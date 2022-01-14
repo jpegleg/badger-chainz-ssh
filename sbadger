@@ -2,16 +2,16 @@
 
 #####################################################################################################################################################################################
 # Badger Chainz SSH -----(sbadger)-----------------------#=#\_                                                                                   |                 MIT LICENSED     #
-#                                                        #=#/ \____ Associate ssh events with each other by reading log line as it is written    |   Copyright  © Keegan Bowen 2022 #
-#    SSH event log data transactional local blockchain   #=#\_/     each line fed into a self validating node chain.                             |                                  #
-#                                                        #=#/ \____ Each line is assigned a hash created from a BLAKE2 hash of chain.                                               #
-#--------------------------------------------------------#=#\_/     useful for extra replication of ssh data locally, as an additional integrity system for ssh data and hostkeys.  #
+#                                                        #=#/ \____ associate ssh events with each other by reading log line as it is written    |   Copyright  © Keegan Bowen 2022 #
+#    SSH event log data transactional local blockchain   #=#\_/     each line encrypted in a collected file with (AES256)                        |                                  #
+#                                                        #=#/ \____ each line is assigned a hash created from a BLAKE2 hash of the event chain                                      #
+#--------------------------------------------------------#=#\_/     useful for extra replication of ssh data locally, as an additional integrity system for ssh data.               #
 #####################################################################################################################################################################################
 
-# Example architecture context, where $DATASET is the directory root of the chainset data:
+# Example architecture context, where $DATASET is chainsets with the node_id distinguishing filehandles:
 #
 # (block storage)-(centralized rsyslog server)-(security analysis HIDS/NIDS)---------------------------------------------
-#                       |                |_|    |_|                                                                     |
+#                                        |_|    |_|                                                                     |
 #                  firewall                 \  /                                                                        |
 #                         \                  ||                                                                         |
 #(incoming ssh attempts)-> [ (sshd)--(rsyslog/syslog->/var/log/auth.log->SEC<===>sbadger#>/opt/sbgr/$DATASET            |
@@ -34,7 +34,7 @@
 # being detected. So if someone removes activity from the auth.log and perhaps remote syslog
 # is not working correctly or not being reviewed, but they didn't erase the additional encrypted copies
 # and sbadger chain files. So let us say they do notice SEC and remove the encrypted logs,
-# then if someone is checking for those logs existing, they would notice the intrusion.
+# they if someone is checking for those logs exiting, they would notice the intrusion.
 # Taking the time to reconstruct those files by refeeding in the ssh data won't
 # work easily because of the time associations, and it is unlikely they have
 # time to reconstruct the local chain.
@@ -57,7 +57,7 @@
 # chain, so if the hostkey changes or a new one is added, a new chain is started and logged.
 # On the first run of sbadger on a new chain with 0 previous lines, a FAIL mark
 # file will be created with no hash and a new chain started.
-# The FAIL and PASS MARK files are in /opt/sbgr/$nodeid.FAIL_MARK and /opt/sbgr/$nodeid.PASS_MARK
+# The FAIL and PASS MARK files are in /opt/sbgr/$nodeid.FAIL_MARK and /opt/sbgr/$nodeid.PASSMARK.
 # These files mark the chain hashes during the chain validtion phase, the first
 # function called by sbadger. The hashes in these MARK files can be used to
 # look up events in the sshchain_$nodeid.block that failed chain validation.
@@ -78,15 +78,9 @@
 # chain can be used in distributed systems and the data
 # consoludated on demand etc via other application etc.
 # /var/run is a local location for tracking application state
-# so we will use that local location for the lock dir.
+# so we will use that local location for the lock file.
 # We can have as many nodes mounted to /opt/sbgr as
 # required if that is a mounted volume, etc.
-# If many sbadgers are created, data could easily get out of order,
-# so keep in mind burst events can result in incorrectly
-# ordered line sequences, this is not a big concern
-# each instances processes in a relaxed way,
-# integrity of the larger dataset is still collected and
-# the data can later be re-sorted by contained time data if required.
 lockrestart () {
   if [ -d /var/run/.sclock ]; then
     sleep 1 && lockrestart
@@ -100,24 +94,33 @@ lockrestart
 # and ensuring that it is a valid entry.
 validate () {
   csize=$(wc -l /opt/sbgr/sshchain_$nodeid.block)
-  if [ "$csize" == 0 ]; then
-    break
-  else
-    echo
-  fi
   lasthash=$(tail -n1 /opt/sbgr/sshchain_$nodeid.block | cut -d' ' -f2)
   prevhash=$(grep -v $lasthash /opt/sbgr/sshchain_$nodeid.block | b2sum | cut -d' ' -f1)
+  if [ -n "$lasthash" ]; then
+    FILL=1
+  else
+    lasthash="new chain created $(date +%Y%m%d%H%M%S) for $nodeid"
+    echo "$lasthash"
+  fi
   if [ "$lasthash" == "$prevhash" ]; then
     echo "$(date +%Y%m%d%H%M%S) $nodeid chain integrity PASS at $lasthash" >> /opt/sbgr/$nodeid.PASS_MARK
   else
-    echo "$(date +%Y%m%d%H%M%S) $nodeid chain integrity FAIL $lasthash" >> /opt/sbgr/$nodeid.FAIL_MARK
+    if [ -n $lasthash ]; then
+      errmsg=FAIL
+    else
+      lasthash="<<<---(( $(ls -larth /etc/ssh/; echo "SHA1 checksums:"; sha1sum /etc/ssh/ssh_host*key; echo "BLAKE2 checksums:"; b2sum /etc/ssh/ssh_host*key; echo "full hash used to create nodeid of $nodeid:"; cat /etc/ssh/ssh_host*key | b2sum)"
+      errmsg=NEW-CHAIN-START
+    fi
+    echo "$(date +%Y%m%d%H%M%S) $nodeid chain integrity $errmsg $lasthash" >> /opt/sbgr/$nodeid.FAIL_MARK
   fi
 }
 
 # The transaction function processes the SSH event data.
 # This function creates the primary key of a timestamp
 # that is used to pair the encrypted data files to
-# the chain itself. 
+# the chain itself. This data is typically confirmed
+# via the regular rsyslog data or other ssh log collection
+# systems, ideally with remote storage duplication.
 transaction () {
   chainlast=$(cat /opt/sbgr/sshchain_$nodeid.block | b2sum | cut -d' ' -f1)
   stamp=$(date +%Y%m%d%H%M%S%N)
@@ -138,6 +141,7 @@ main () {
 
 export nodeid=$(cat /etc/ssh/ssh_host*key 2>/dev/null | b2sum | cut -c1-13 | sed 's/.\{4\}/&-/g')
 
+# This <&0 reads from STDIN so that data can be piped into ssh_badger
 while read uinput; do
  export DATASEGMENT="${uinput}"
  # Execute the main function targeting the last assigned value of $DATASEGMENT from STDIN
