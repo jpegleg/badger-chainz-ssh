@@ -95,6 +95,10 @@ Here is an example of reconstructing an auth.log from the encrypted lines:
 ```
 for x in $(ls *.enc); do echo $x; gpg -d $x >> reconstructed_auth.log; done
 ```
+### Warning
+
+Servers that are low on resources and/or have heavy SSH activity could experience resource exhaustion or DoS from badger-chainz-ssh.
+Servers that have a lot of valid ssh traffic, such as automated ssh systems, may not want to use badger-chainz-ssh if availability is priority.
 
 #### Before installing:
 
