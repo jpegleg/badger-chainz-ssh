@@ -56,6 +56,8 @@ Read ssh logs and create additional copies of each line as events in a chain.
  named say "localhost" with the samed cloned host keys could exist
  and cause repeating unsortable ids, but that is one of many reasons
  why you should not repeat host keys and hostnames :)
+ 
+ 
  sbadger creates a lock directory to control threads.
  With out this lock, instances of badger-chainz-ssh will
  be processed more quickly, but can cause
