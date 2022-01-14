@@ -34,7 +34,7 @@
 # being detected. So if someone removes activity from the auth.log and perhaps remote syslog
 # is not working correctly or not being reviewed, but they didn't erase the additional encrypted copies
 # and sbadger chain files. So let us say they do notice SEC and remove the encrypted logs,
-# they if someone is checking for those logs exiting, they would notice the intrusion.
+# then if someone is checking for those logs existing, they would notice the intrusion.
 # Taking the time to reconstruct those files by refeeding in the ssh data won't
 # work easily because of the time associations, and it is unlikely they have
 # time to reconstruct the local chain.
