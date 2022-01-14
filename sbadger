@@ -108,9 +108,9 @@ validate () {
   lasthash=$(tail -n1 /opt/sbgr/sshchain_$nodeid.block | cut -d' ' -f2)
   prevhash=$(grep -v $lasthash /opt/sbgr/sshchain_$nodeid.block | b2sum | cut -d' ' -f1)
   if [ "$lasthash" == "$prevhash" ]; then
-    echo "chain integrity PASS at $lasthash" >> /opt/sbgr/$nodeid.PASS_MARK
+    echo "$(date +%Y%m%d%H%M%S) $nodeid chain integrity PASS at $lasthash" >> /opt/sbgr/$nodeid.PASS_MARK
   else
-    echo "chain integrity FAIL at $lasthash" >> /opt/sbgr/$nodeid.FAIL_MARK
+    echo "$(date +%Y%m%d%H%M%S) $nodeid chain integrity FAIL $lasthash" >> /opt/sbgr/$nodeid.FAIL_MARK
   fi
 }
 
