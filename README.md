@@ -66,7 +66,7 @@ Read ssh logs and create additional copies of each line as events in a chain.
  chain can be used in distributed systems and the data
  consoludated on demand etc via other application etc.
  /var/run is a local location for tracking application state
- so we will use that local location for the lock file.
+ so we will use that local location for the lock dir.
  We can have as many nodes mounted to /opt/sbgr as
  required if that is a mounted volume, etc.
  The validate function is used to verify the integrity of the chain by checking the last entry
