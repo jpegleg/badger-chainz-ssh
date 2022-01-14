@@ -94,7 +94,7 @@ Currently if the SEC log is turned on we do see some exit 1 returns from sbadger
 In my tests, we see exit 1 under "normal" conditions for SOME events. When in doubt, review the files created from the process that had the bad exit code.
 By default the SEC log is not written, enable it via parameters in `/etc/defaults/sec`
 
-Here is an example of reconstructing an auth.log from the encrypted lines:
+Here is an example of reconstructing an auth.log from the encrypted lines (assuming you have the private key and the private key password):
 ```
 for x in $(ls *.enc); do echo $x; gpg -d $x >> reconstructed_auth.log; done
 ```
