@@ -1,3 +1,5 @@
 # sbadger defaults for sec
 RUN_DAEMON="no"
-DAEMON_ARGS="--conf=/etc/sec.conf --log=/opt/sbgr/sec.log --input=/var/log/auth.log --pid=/var/run/sec.pid --detach"
+DAEMON_ARGS="--conf=/etc/sec.conf --input=/var/log/auth.log --pid=/var/run/sec.pid --detach"
+# Switch on the log to debug
+# example: DAEMON_ARGS="--conf=/etc/sec.conf --log=/opt/sbgr/sec.log --input=/var/log/auth.log --pid=/var/run/sec.pid --detach"
