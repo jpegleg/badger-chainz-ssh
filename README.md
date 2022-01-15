@@ -1,5 +1,14 @@
 # badger-chainz-ssh 🦡
 Read ssh logs and create additional copies of each line as events in a chain.
+Additionally, optionally but default in `sec.conf`, shutdown sshd daemon for periods of time when attack conditions are met.
+In badger-chainz-ssh we call this sshd timeout the autoseal feature. Disable autoseal by commenting out the last two rules
+in `sec.conf` that take the 'action' of triggering the autoseal_1 or autoseal_2 scripts. If you were going to actually use
+this protype, you would want to review and likely adjust the autoseal_1 and autoseal_2 scripts as well as the rules around them
+to match the needed conditions in the chosen security model. For example, the security model may require that specifically
+VALID root ssh creentials should trigger an autoseal, which would allow that one session to continue (stopping sshd doesn't terminate existing connections, thos hold open until exit. This could be like, if root logs in via ssh, then no one else may log into the system via ssh for 50 minutes, potentially draining its containers etc, execute any number of security measures automatically. SEC is a wonderful tool, badger-chainz-ssh is just some
+bits around SEC event processing capabilities, demonstrating the flexibility of stream processing logic that includes time and cumulative state patterns.
+
+...
 
 A FAIL_MARK file is created when a new chain is started.
 A new chain is started if ssh_host_X_key files get modified, added, or deleted.
@@ -96,7 +105,8 @@ badger-ssh.20220113214002438455395.open-box_547b-fb03-a428-1.enc
  This system is not inherently tamper proof by itself although makes tampering more difficult.
  
  It does not prevent tampering with the /var/log/auth.log itself, but increases the chances of tampering
- being detected. So if someone removes activity from the auth.log and perhaps remote syslog
+ being detected by making additional encrypted copies of each line of data as it is written.
+ So if someone removes activity from the auth.log and perhaps remote syslog
  is not working correctly or not being reviewed, but they didn't erase the additional encrypted copies
  and sbadger chain files. So let us say they do notice SEC and remove the encrypted logs,
  then if someone is checking for those logs existing, they would notice the intrusion.
