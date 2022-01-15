@@ -5,7 +5,7 @@ In badger-chainz-ssh we call this sshd timeout the autoseal feature. Disable aut
 in `sec.conf` that take the 'action' of triggering the autoseal_1 or autoseal_2 scripts. If you were going to actually use
 this protype, you would want to review and likely adjust the autoseal_1 and autoseal_2 scripts as well as the rules around them
 to match the needed conditions in the chosen security model. For example, the security model may require that specifically
-VALID root ssh creentials should trigger an autoseal, which would allow that one session to continue (stopping sshd doesn't terminate existing connections, thos hold open until exit. This could be like, if root logs in via ssh, then no one else may log into the system via ssh for 50 minutes, potentially draining its containers etc, execute any number of security measures automatically. SEC is a wonderful tool, badger-chainz-ssh is just some
+VALID root ssh creentials should trigger an autoseal, which would allow that one session to continue (stopping sshd doesn't terminate existing connections, those hold open until exit. This could be like, if root logs in via ssh, then no one else may log into the system via ssh for 50 minutes, potentially draining its containers etc, execute any number of security measures automatically. SEC is a wonderful tool, badger-chainz-ssh is just some
 bits around SEC event processing capabilities, demonstrating the flexibility of stream processing logic that includes time and cumulative state patterns.
 
 ...
